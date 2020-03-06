@@ -1,0 +1,130 @@
+// LCD module connections
+sbit LCD_RS at RB4_bit;
+sbit LCD_EN at RB5_bit;
+sbit LCD_D4 at RB0_bit;
+sbit LCD_D5 at RB1_bit;
+sbit LCD_D6 at RB2_bit;
+sbit LCD_D7 at RB3_bit;
+sbit LCD_RS_Direction at TRISB4_bit;
+sbit LCD_EN_Direction at TRISB5_bit;
+sbit LCD_D4_Direction at TRISB0_bit;
+sbit LCD_D5_Direction at TRISB1_bit;
+sbit LCD_D6_Direction at TRISB2_bit;
+sbit LCD_D7_Direction at TRISB3_bit;
+// End LCD module connections
+char txtd[7];
+char txt1[] = "Automacao";
+char txt2[] = "Residencial";
+char txt3[] = "Ligar Ventilador";
+char txt4[] = "Desligar Ventilador";
+char txt5[] = "Ligar Luz";
+char txt6[] = "Apagar Luz";
+char txtc[7];
+int i = 0;
+int change = 0;
+int select = 0;
+void out(char mode){
+     Lcd_Init();
+     Lcd_Cmd(_LCD_CLEAR);
+     Lcd_Cmd(_LCD_CURSOR_OFF);
+     Lcd_Out(1,1,"Modulo:");
+     IntToStr(select,txtd);
+     Lcd_Out(1,15,"/4");
+     Lcd_Out(1,14,Ltrim(txtd));
+     Lcd_Out(2,1,mode);
+}
+void fout(char md1[] , char md2[]){
+     Lcd_Init();
+     Lcd_Cmd(_LCD_CLEAR);
+     Lcd_Cmd(_LCD_CURSOR_OFF);
+     delay_ms(200);
+     Lcd_Out(1,1,md1);
+     Lcd_Out(2,1,md2);
+}
+void menu(){
+    switch(select){
+        case 1:
+            out(txt3);
+            break;
+        case 2:
+             out(txt4);
+             break;
+        case 3:
+             out(txt5);
+             break;
+        case 4:
+             out(txt6);
+             break;
+        default:
+            if(select == 0){select = 4;out(txt6);}
+            if(select == 5){select = 1;out(txt3);}    // correto
+            break;
+    }
+}
+void menu_x(){
+     switch(select){
+         case 1:
+             fout("Ventilador","ON.");
+             break;
+         case 2:
+              fout("Ventilador","OFF");
+              break;
+         case 3:
+              fout("Luzes","ON");
+              break;
+         case 4:
+              fout("Luzes","OFF");
+              break;
+         default:
+             fout("0X0","Erro no sistema");
+             break;
+     }
+}
+void up_row(){
+    select++;
+    menu();
+}
+void down_row(){
+    select--;
+    menu();
+}
+check_pressed(){
+    if(portd.RD0 == 1){
+        up_row();
+        change = 1;
+        delay_ms(300);
+    }
+    if(portd.RD1 == 1){
+        down_row();
+        change = 1;
+        delay_ms(300);
+    }
+    if(portd.RD2 == 1){
+        menu_x();
+        delay_ms(300);
+    }
+}
+void main(){
+     ADCON1 = 0B00001111;
+     trisd = 255;
+    while(change == 0){
+        check_pressed();
+        Lcd_Init();                        // Initialize LCD
+        Lcd_Cmd(_LCD_CLEAR);               // Clear display
+        Lcd_Cmd(_LCD_CURSOR_OFF);          // Cursor off
+        Lcd_Out(1,1,txt1);                 // Write text in first row
+        Lcd_Out(2,1,txt2);                 // Write text in second row
+        check_pressed();
+        delay_ms(200);
+        check_pressed();
+        delay_ms(200);
+        check_pressed();
+        delay_ms(200);
+        check_pressed();
+        delay_ms(200);
+        check_pressed();
+    }
+    while(change == 1){
+        check_pressed();
+    }
+}
