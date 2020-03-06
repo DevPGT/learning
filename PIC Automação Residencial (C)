@@ -1,46 +1,55 @@
-// LCD module connections
-sbit LCD_RS at RB4_bit;
-sbit LCD_EN at RB5_bit;
-sbit LCD_D4 at RB0_bit;
-sbit LCD_D5 at RB1_bit;
-sbit LCD_D6 at RB2_bit;
-sbit LCD_D7 at RB3_bit;
-sbit LCD_RS_Direction at TRISB4_bit;
-sbit LCD_EN_Direction at TRISB5_bit;
-sbit LCD_D4_Direction at TRISB0_bit;
-sbit LCD_D5_Direction at TRISB1_bit;
-sbit LCD_D6_Direction at TRISB2_bit;
-sbit LCD_D7_Direction at TRISB3_bit;
-// End LCD module connections
+//=====================================================================================================================
+// Titulo: Sistema de controle por menu I2C - LCD
+// Função: Mostrar um menu com opções ao cliente para que o mesmo possa executar funções em determinado sistema.
+// 2 ETEL 2019
+// Autor: Paulo Gabriel Teixeira
+// Turma: B
+//========================================================INICIO DO CÓDIGO=================================================
+// ORDENS , LIBRARYS E INCLUDES.
+#pragma orgall 0x1000
+#include "Lcd_I2C_18f4550.h"
+char Lcd_I2C_address = 0x4E;
 char txtd[7];
-char txt1[] = "Automacao";
-char txt2[] = "Residencial";
+// TELA INICIAL
+char txt1[] = "Painel Central";
+char txt2[] = "Carregando dados.";
+// MODULOS CARREGADOS
 char txt3[] = "Ligar Ventilador";
 char txt4[] = "Desligar Ventilador";
 char txt5[] = "Ligar Luz";
 char txt6[] = "Apagar Luz";
-char txtc[7];
-int i = 0;
+// VARIAVEIS DO PROGRAMA
+int x = 0;
 int change = 0;
 int select = 0;
+int fanon = 0;
+int fanpot = 10;
+int inmenu = 0;
+int menut = 0;
+unsigned short current_duty, old_duty, current_duty1, old_duty1;
+// FUNÇÃO PADRÃO DE CARREGAMENTO DO LCD
+void i2c_start(){
+    Lcd_I2C_Init();
+    Lcd_I2C_Cmd(_LCD_CLEAR);
+    Lcd_I2C_Cmd(_LCD_CURSOR_OFF);
+}
+// FUNÇÃO PARA ESCREVER O MODULO NA TELA
 void out(char mode){
-     Lcd_Init();
-     Lcd_Cmd(_LCD_CLEAR);
-     Lcd_Cmd(_LCD_CURSOR_OFF);
-     Lcd_Out(1,1,"Modulo:");
-     IntToStr(select,txtd);
-     Lcd_Out(1,15,"/4");
-     Lcd_Out(1,14,Ltrim(txtd));
-     Lcd_Out(2,1,mode);
+     i2c_start();
+     Lcd_I2C_Out(1,1,"Modulo:");
+     IntToStr(select,txtd); // Converte o ID Atual do modulo para String, para que assim possa ser impresso no LCD
+     Lcd_I2C_Out(1,15,"/4");
+     Lcd_I2C_Out(1,14,Ltrim(txtd));
+     Lcd_I2C_Out(2,1,mode);
 }
+// Função para escrever algo na tela nas 2 linhas
 void fout(char md1[] , char md2[]){
-     Lcd_Init();
-     Lcd_Cmd(_LCD_CLEAR);
-     Lcd_Cmd(_LCD_CURSOR_OFF);
+     i2c_start();
      delay_ms(200);
-     Lcd_Out(1,1,md1);
-     Lcd_Out(2,1,md2);
+     Lcd_I2C_Out(1,1,md1);
+     Lcd_I2C_Out(2,1,md2);
 }
+// Carrega e imprime no LCD o modulo de acordo com a variavel Select
 void menu(){
     switch(select){
         case 1:
@@ -57,74 +66,152 @@ void menu(){
              break;
         default:
             if(select == 0){select = 4;out(txt6);}
-            if(select == 5){select = 1;out(txt3);}    // correto
+            if(select == 5){select = 1;out(txt3);}
             break;
     }
 }
+recall_pwm(){
+    PWM1_Start();
+    current_duty = (fanpot * 255);
+    current_duty = current_duty / 100;
+    PWM1_Set_Duty(current_duty);
+}
+// Imprime no LCD o Menu correto.
 void menu_x(){
      switch(select){
          case 1:
-             fout("Ventilador","ON.");
+             menut = 1;
+             if(fanpot != 100){
+                 fanpot = fanpot + 10;
+             }
+             inmenu = 1;
+             fanon = 1;
+             recall_pwm();
+             fout("Ventilador","ON POTENCIA:");
+             IntToStr(fanpot,txtd);
+             Lcd_I2C_Out(2,15," %");
+             Lcd_I2C_Out(2,13,Ltrim(txtd));
              break;
          case 2:
+              inmenu = 1;
               fout("Ventilador","OFF");
+              PWM1_Stop();
+              fanon = 0;
               break;
          case 3:
+              inmenu = 1;
               fout("Luzes","ON");
+              PORTB.RB6 = 0;
               break;
          case 4:
+              inmenu = 1;
               fout("Luzes","OFF");
+              PORTB.RB6 = 1;
               break;
          default:
+             inmenu = 1;
              fout("0X0","Erro no sistema");
              break;
      }
 }
+// Muda para o modulo posterior ao atual
 void up_row(){
     select++;
     menu();
 }
+// Muda o modulo anterior ao atual
 void down_row(){
     select--;
     menu();
 }
+// Verifica se os botões estão pressionados
 check_pressed(){
-    if(portd.RD0 == 1){
+    if(portd.RD4 == 0 && !inmenu){
         up_row();
         change = 1;
         delay_ms(300);
+    }else if(portd.RD4 == 0){
+        switch(menut){
+            case 1: // Menu do ventilador
+                if(fanpot != 100){
+                    fanpot = fanpot + 10;
+                    recall_pwm();
+                }
+                IntToStr(fanpot,txtd);
+                Lcd_I2C_Out(2,15," %");
+                Lcd_I2C_Out(2,13,Ltrim(txtd));
+                delay_ms(400);
+                break;
+            default:
+                break;
+        }
     }
-    if(portd.RD1 == 1){
+    if(portd.RD6 == 0 && !inmenu){
         down_row();
         change = 1;
         delay_ms(300);
+    }else if(portd.RD6 == 0){
+        switch(menut){
+            case 1: // Menu do ventilador
+                if(fanpot != 0){
+                    fanpot = fanpot - 10;
+                    recall_pwm();
+                }
+                IntToStr(fanpot,txtd);
+                Lcd_I2C_Out(2,15," %");
+                Lcd_I2C_Out(2,13,Ltrim(txtd));
+                delay_ms(400);
+                break;
+            default:
+                break;
+        }
     }
-    if(portd.RD2 == 1){
+    if(portd.RD5 == 0 && !inmenu){
         menu_x();
         delay_ms(300);
     }
-}
-void main(){
-     ADCON1 = 0B00001111;
-     trisd = 255;
-    while(change == 0){
-        check_pressed();
-        Lcd_Init();                        // Initialize LCD
-        Lcd_Cmd(_LCD_CLEAR);               // Clear display
-        Lcd_Cmd(_LCD_CURSOR_OFF);          // Cursor off
-        Lcd_Out(1,1,txt1);                 // Write text in first row
-        Lcd_Out(2,1,txt2);                 // Write text in second row
-        check_pressed();
-        delay_ms(200);
-        check_pressed();
-        delay_ms(200);
-        check_pressed();
-        delay_ms(200);
-        check_pressed();
-        delay_ms(200);
-        check_pressed();
+    if(portd.RD7 == 0 && inmenu){
+        inmenu = 0;
+        change = 1;
+        menut = 0;
+        menu();
     }
+}
+void InitMain() {
+//ANSEL  = 0;                         // Configure AN pins as digital
+//ANSELH = 0;
+  //C1ON_bit = 0;                       // Disable comparators
+  //C2ON_bit = 0;
+  PORTA = 255;
+  TRISA = 255;                        // configure PORTA pins as input
+  PWM1_Init(5000);                    // Initialize PWM1 module at 5KHz
+}
+
+void main(void) org 0x1000{
+    InitMain();
+    PWM1_Set_Duty(0);        // Set current duty for PWM1
+    ADCON1=0b00001110;
+    trisb = 0b00000000;
+    PORTB.RB7 = 1;
+    PORTB.RB6 = 1;
+
+    I2C1_Init(250000);
+    i2c_start();
+    trisd = 255;
+    while(change == 0){
+        i2c_start();
+        change = 1;
+        Lcd_I2C_Out(2,1,"Starting UP...");
+        delay_ms(400);
+        up_row();
+    }
+    // Enquanto na tela inicial verifica a todo momento se algum botão foi pressionado
     while(change == 1){
         check_pressed();
     }
 }
+//[ ==================================== ]
+//  Fim do código
+//  Author: Paulo Gabriel Teixeira
+//  P.G 2019
+//[ ==================================== ]
