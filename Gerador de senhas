@@ -1,0 +1,32 @@
+#include <iostream> 
+#include <cstdlib>
+ 
+using namespace std;
+
+int main (int argc, char** argv)
+{ 
+	int x = 1; 
+	string pass = "";
+	char k[27] = { 'a' , 'b' , 'c' , 'd' ,'e' ,'f','g','h','i','j','k','l','m','n','o','p','q','r','s','u','v','w','x','y','z' };
+	while( x != 0 )
+	{
+		cout << "Digite o tamanho da senha (0 para finalizar): "; 
+		cin >> x; 
+		if ( x == 0 ) 
+		{
+			cout <<"Saindo...\n";
+			return 0;
+		}
+		else
+		{ 
+			while( x != 0 )
+			{
+				pass += k[rand() % 27];
+				x--;
+			}
+			cout << "Senha: " << pass << endl;
+		}
+	}
+	system ("pause"); 
+	return 0; 
+}
