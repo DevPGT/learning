@@ -1,0 +1,407 @@
+#include <iostream>
+#include <string>
+#include <string.h>
+#include <stdlib.h>
+#include <windows.h>
+#include <iomanip>
+#include <stdio.h>
+#include <conio.h>
+#include <fstream>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/signal.h>
+#include <errno.h>
+#include <netdb.h>
+/* run this program using the console pauser or add your own getch, system("pause") or input loop */
+using namespace std;
+
+int checador_conexao() {
+	system("cls");
+	printf("\n==========================================================================================\n");
+	printf("\nCODIGO: 4\n");
+	printf("VERSAO: 1.0\n");
+	printf("FUNCAO: Verificar a conexao de um site ou endereco ip atraves do PING\n");
+	printf("Autor(es): Paulo Gabriel Teixeira\n");
+	printf("\n==========================================================================================\n\n");
+	printf("Iniciar projeto....\n\n");
+	cout << "Verificador de conexão." << endl;
+	cout << "IP OU URL DO WEBSITE QUE VOCE DESEJA VERIFICAR SE ESTA ONLINE" << endl;
+	string x = "facebook.com"; 
+	cin >> x;
+	system("ping facebook.com > ping.txt");
+	ifstream ping("ping.txt");
+	string problema = "Esgotado o tempo limite do pedido.";
+	string resposta;
+	getline(ping, resposta);
+	if (problema == resposta) {
+		Beep(523.251, 250);
+		printf("FORA DO AR");
+	}
+	else{
+		Beep(523.251, 250);
+		Beep(523.251, 250);
+		cout << "1" << resposta;
+		cout << endl << "2" << problema;
+		cout << endl;
+	}
+	system("pause");
+	return 0;
+}
+int gerador_cc(){
+	system("cls");
+	printf("\n==========================================================================================\n");
+	printf("\nCODIGO: 4\n");
+	printf("VERSAO: 1.0\n");
+	printf("FUNCAO: Gerar numeros randomicos para utilizar em meio ao padrao de cartoes de credito\n");
+	printf("Autor(es): Paulo Gabriel Teixeira\n");
+	printf("\n==========================================================================================\n\n");
+	printf("Iniciar projeto....\n\n");
+	cout << "GERADOR DE CC" << endl;
+	cout << " Qual bin deseja usar ? (5 primeiros numeros)" << endl;
+
+	double bin = 00000;
+	cin >> bin;
+
+	cout << "Qual data deseja utilizar ?(xx|xxxx)" << endl;
+	
+	string date = "xx|xxxx";
+	cin >> date;
+
+	cout << "QUAL CVV DESEJA USAR ? (padrao 000)" << endl;
+
+	string cvv = "000";
+	cin >> cvv;
+	
+	cout << "Quantas geradas voce deseja ?\nQuantidade: ";
+	
+	int quantia;
+	cin >> quantia;
+	
+	while(quantia != 0){
+		cout << bin;
+		double x = 0;
+		for (double i = 0; i != 11; i++){
+			x = rand() % 10;
+			cout << x;
+		}
+		cout << "|" << date << "|" << cvv;
+		cout << endl;
+		quantia--;
+	}
+	system("pause");
+	return 0;
+}
+// CÓDIGO FONTE DO PROJETO NUMERO 0 (CNH AGE)
+void switch_pj0(int escolha){
+	switch(escolha){
+		case 0:
+			system("cls");
+			printf("Qual sua data de nascimento ? EX: 05/2002 -> (MM/AAAA) onde M = MES e A = ANO\n");
+			printf("Resposta: ");
+			char datan[7];
+			cin >> datan;
+			cout << "ANO: " << &datan[0,3] << " MES: " << datan[0] << datan[1]; // 15/2019 1 5 /2019
+			break;
+		case 1:
+			system("cls");
+			printf("Especifique sua idade em numero EX: 18\nIDADE: ");
+			int age;
+			cin >> age;
+			if(age >= 18){
+				if(age >= 65){
+					if(age >= 100){
+						printf("Com essa idade era para voce estar morto !");
+					}else{
+						printf("Voce pode tirar sua CNH porem fique atento \npois sua idade ultrapassa os 65 anos que \npor lei tem uma pequena necessidade de ser mais atento em renovar os exames e carteira\n");	
+					}
+				}else{
+					printf("Voce pode tirar sua carteira tranquilamente ! BOA SORTE !");
+				}
+			}else{
+				int conta = 18 - age;
+				cout << "Voce ainda nao pode tirar carta aguarde mais: " << conta << " anos para conseguir tirar !";
+			}
+			break;
+		case 2:
+			printf("1 - Saber Ler e escrever \n2 - Possuir CPF e RG atualizados \n3 - Ter conhecimentos basicos em portugues como ler e escrever \n4 - Ter exames de psicotecnico toxicologico e medico\n5 - Documentos e foto 3x4 \n6 - Dinheiro.");
+			printf("\n\nPara continuar clique em qualquer tecla!");
+			system("pause");
+			
+			break;
+		case 3:
+			printf("1 - Taxa do exame médico (pago diretamente na clínica): R$ 84,81;\n");
+			printf("2 - Taxa do exame psicológico (pago diretamente na clínica): R$ 84,81;\n");
+			printf("3 - Aulas no CFC teórico: consultar o CFC;\n");
+			printf("4 - Taxa de exames – teórico e prático:  R$ 98,95 (pagamento nos bancos conveniados, através do CPF do candidato);\n");
+			printf("5 - Aulas no CFC prático: consultar o CFC;\n");
+			printf("6 - Taxa de emissão da Permissão para Dirigir: R$ 42,41 (pagamento nos bancos conveniados, pelo CPF do candidato).\n");
+			printf("7 - Atenção: Não efetue o pagamento da taxa de postagem. As taxas de exame médico e psicotécnico não deverão ser pagas diretamente no banco.\n");
+			printf("Boa sorte !\n");
+			break;
+		default:
+			system("cls");
+			printf("Codigo do Projeto 0 desconhecido tente novamente !\n");
+			printf("[0] Verificar REQUISITO de idade com data\n[1] Verificar REQUISITO de idade com a idade\n[2] Ver requisitos extras para tirar CNH\n[3] Verificar valores e demais informacoes");
+			printf("\n\nEscolha: ");
+			int escolha;
+			cin >> escolha;
+			switch_pj0(escolha);
+			break;
+	}
+}
+void switch_pj1(int escolha){
+	switch(escolha){
+		case 0:
+			printf("Digite aqui sua idade desde o seu nascimento !");
+			printf("\n\nEscolha: ");
+			int theage;
+			cin >> theage;
+			if(theage >= 16){
+				if(theage >= 18 && theage <= 65){
+					printf("Em sua idade por lei voce tem consigo a obrigacao de ir a uma urna e realizar o voto ! Lembre-se : 17 sempre BOLSONARO 2018 - 2026");
+				}else{
+					printf("Pela sua idade as leis consolidades afirman que os individuos nessa faixaetaria tem consigo Voto facultativo !");
+				}
+			}else{
+				cout << "Aguarde " << 18 - theage << " Anos para ir ate uma urna votar ! Enquanto isso curta sua vida ! Voce tem muito pela frente.";
+			}
+			break;
+		case 1:
+			printf("O nosso presidente que por natureza sanara todos os problemas de nosso pais e em breve seremos novamente uma SUPER POTENCIA !\n\n\n MELHOR PRESIDENTE DO BRASIL ATE HOJE: JAIR MESSIAS BOLSONARO");
+			break;
+		case 2:
+			printf("EM BREVE!");
+			break;
+		default:
+			system("cls");
+			printf("Este Codigo do Projeto 1 e desconhecido tente outro !\n");
+			printf("	[0] Digitar Idade para verificar\n	[1] Verificar Presidente Atual\n	[2] Verificar Requisitos e informacoes de voto");
+			printf("\n\nEscolha: ");
+			int escolha;
+			cin >> escolha;
+			switch_pj0(escolha);
+			break;
+	}
+}
+char alfabetoCN[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V','W', 'X', 'Y', 'X', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't','u', 'v', 'w', 'x', 'y', 'z', '*', '#'};
+char alfabeto[] ={'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V','W', 'X', 'Y', 'X', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't','u', 'v', 'w', 'x', 'y', 'z'};
+char numeros[] ={'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+
+void switch_pj2(int escolha){
+	switch(escolha){
+		int q,xvalue;
+		case 0:
+			q = 8;
+			printf("Senha gerada: ");
+			while(q != 0){
+				xvalue = (rand() % 10);
+ 	  			cout << numeros[xvalue];
+		    	q--;
+			}
+			break;
+		case 1:
+			q = 8;
+			printf("Senha gerada: ");
+			while(q != 0){
+				xvalue = (rand() % 50);
+ 	  			cout << alfabeto[xvalue];
+		    	q--;
+			}
+			break;
+		case 2:
+			q = 8;
+			printf("Senha gerada: ");
+			while(q != 0){
+				xvalue = (rand() % 64);
+ 	  			cout << alfabetoCN[xvalue];
+		    	q--;
+			}
+			break;
+		case 3:
+			printf("Escolha quantidade de caracteres que voce deseja 8 - 50\n");
+			printf("Quantidade: ");
+			cin >> q;
+			if(q >= 8 && q <=50){
+				printf("Escolha o tipo de alfabeto que voce deseja: \n	[0] - Com letras maiusculas minusculas e numeros\n	[1] - Apenas letras maiusculas e minusculas.\n	[2] - Apenas numeros.\n");
+				printf("TIPO: ");
+				int tipo_alfabeto;
+				cin >> tipo_alfabeto;
+				printf("\n\nSENHA GERADA: ");
+				switch(tipo_alfabeto){
+					case 0:
+						while(q != 0){
+							xvalue = (rand() % 64);
+		        			cout << alfabetoCN[xvalue];
+		        			q--;
+						}
+						break;
+					case 1:
+						while(q != 0){
+							xvalue = (rand() % 50);
+		        			cout << alfabeto[xvalue];
+		        			q--;
+						}
+						break;
+					case 2:
+						while(q != 0){
+							xvalue = (rand() % 10);
+		        			cout << numeros[xvalue];
+		        			q--;
+						}
+						break;
+					default:
+						while(q != 0){
+							xvalue = (rand() % 64);
+		        			cout << alfabeto[xvalue];
+		        			q--;
+						}
+						break;
+				}
+			}else{
+				printf("Insira valor minimo de 8 e maximo de 50!");
+			}
+			break;
+		default:
+			system("cls");
+			printf("Este Codigo do Projeto 2 e desconhecido tente outro !\n");
+			printf("	[0] Senha 8C Numeros\n	[1] Senha 8C letras\n	[2] Senha 8C Letras e Numeros\n	[3] Configurar senha");
+			printf("\n\nEscolha: ");
+			int escolha;
+			cin >> escolha;
+			switch_pj2(escolha);
+			break;
+	}
+}
+// CODIGO FONTE DA RECEPÇÃO DO PROJETO NUMERO 0 (CNH AGE)
+void projeto_0(){
+	printf("\n==========================================================================================\n");
+	printf("\nCODIGO: 0\n");
+	printf("VERSAO: 1.0\n");
+	printf("FUNCAO: Verificar informacoes sobre CNH e requisistos para ter a mesma no pais Brasil.\n");
+	printf("Autor(es): Paulo Gabriel Teixeira\n");
+	printf("\n==========================================================================================\n\n");
+	printf("Iniciar projeto....\n\n");
+	printf("Escolha as opcoes disponiveis: \n");
+	printf("	[0] Verificar REQUISITO de idade com data\n	[1] Verificar REQUISITO de idade com a idade\n	[2] Ver requisitos extras para tirar CNH\n	[3] Verificar valores e demais informacoes");
+	printf("\nEscolha: ");
+	int escolha;
+	cin >> escolha;
+	switch_pj0(escolha);
+}
+void projeto_1(){
+	printf("\n==========================================================================================\n");
+	printf("\nCODIGO: 1\n");
+	printf("VERSAO: 1.0\n");
+	printf("FUNCAO: Verificar necessidade ou voto facultativo no pais Brasil\n");
+	printf("Autor(es): Paulo Gabriel Teixeira\n");
+	printf("\n==========================================================================================\n\n");
+	printf("Iniciar projeto....\n\n");
+	printf("Escolha as opcoes disponiveis: \n");
+	printf("	[0] Digitar Idade para verificar\n	[1] Verificar Presidente Atual\n	[2] Verificar Requisitos e informacoes de voto");
+	printf("\nEscolha: ");
+	int escolha;
+	cin >> escolha;
+	switch_pj1(escolha);
+}
+void projeto_2(){
+	printf("\n==========================================================================================\n");
+	printf("\nCODIGO: 2\n");
+	printf("VERSAO: 1.0\n");
+	printf("FUNCAO: Gerar Senhas para melhorar seguranca de um sistema\n");
+	printf("Autor(es): Paulo Gabriel Teixeira\n");
+	printf("\n==========================================================================================\n\n");
+	printf("Iniciar projeto....\n\n");
+	printf("Escolha as opcoes disponiveis: \n");
+	printf("	[0] Senha 8C Numeros\n	[1] Senha 8C letras\n	[2] Senha 8C Letras e Numeros\n	[3] Configurar senha");
+	printf("\nEscolha: ");
+	int escolha;
+	cin >> escolha;
+	switch_pj2(escolha);
+}
+// CODIGO FONTE DA RECEPCAO E DIRECIONAMENTO DOS PROJETOS DISPONIVEIS
+void static call_switch(int projeto){
+		switch(projeto){
+			case 0:
+				system("cls");
+				printf("EXECUTANDO PROJETO...");
+				projeto_0();
+				break;
+			case 1:
+				system("cls");
+				printf("EXECUTANDO PROJETO...");
+				projeto_1();
+				break;
+			case 2:
+				system("cls");
+				printf("EXECUTANDO PROJETO...");
+				projeto_2();
+				break;
+			case 3:
+				gerador_cc();
+				break;
+			case 4:
+				checador_conexao();
+				break;
+			case 99:
+				printf("\n\n\n	OBRIGADO POR UTILIZAR O SOFTWARE !");
+				system("exit");
+				break;
+			default:
+				// VOLTA PARA ESCOLHER OS PROJETOS DISPONIVEIS
+				system("cls");
+				
+				printf("Projeto desconhecido tente novamente!\n\n");
+				printf("Escolha o codigo que deseja rodar!\n");
+				printf("[0] CHECADOR DE IDADE PARA TER CNH\n");
+				printf("[1] NOVOS EM BREVE!\n");
+				printf("\nEscolha: ");
+				int projeto;
+				cin >> projeto;
+				call_switch(projeto);
+				break;
+		}
+}
+// CODIGO FONTE PRINCIPAL ACEITAR TERMOS E ESCOLHER PROJETO PARA RODAR
+bool first = false;
+bool saida = false;
+int main() {
+	string resposta;
+	printf("Este software foi desenvolvido por: HagashPG \nAceita os termos de uso ? (S/N)\n");
+	printf("Escolha: ");
+	cin >> resposta;
+	if(resposta == "S" || resposta == "s"){
+		while(saida == false){
+			printf("\n");
+			if(first == true){
+			system("pause");	
+			}else{
+				first = true;
+			}
+			system("cls");
+			printf("Escolha o codigo que deseja rodar!\n");
+			printf("[0] CHECADOR DE IDADE PARA TER CNH\n");
+			printf("[1] CHECADOR DE NECESSIDADE DE VOTO\n");
+			printf("[2] GERADOR DE SENHAS\n");
+			printf("[3] GERADOR DE CC\n");
+			printf("[4] CHECADOR DE CONEXAO\n");
+			printf("[99] SAIDA.");
+			printf("\nEscolha: ");
+			int projeto;
+			cin >> projeto;
+			call_switch(projeto);
+			if(projeto == 99){
+				saida = true;
+			}		
+		}
+		
+	}else{
+		// FIM DO PROGRAMA POR RECUSA DE TERMOS
+		system("cls");
+		printf("Como voce negou os termos de uso o programa foi fechado.\n");
+		Beep(523.251, 250);
+		system("exit");
+	}
+	return 0;//INUTIL MAS TÁ NÉ
+}
