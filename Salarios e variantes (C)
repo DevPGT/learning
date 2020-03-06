@@ -1,0 +1,108 @@
+#include <iostream>
+using namespace std;
+
+int idades[255];
+int salarios[255];
+int Cadastrados = 0;
+int read = 0;
+
+void addIdade(int idade)
+{
+	idades[Cadastrados] = idade;
+	cout << "A idade do vetor numero " << Cadastrados << " = " << idades[Cadastrados] << endl;
+}
+
+void addSalario(int salario)
+{
+	salarios[Cadastrados] = salario;
+	cout << "O Salario do vetor numero " << Cadastrados << " = " << salarios[Cadastrados] << endl;
+}
+
+float TiraMedia(int valores[])
+{
+	int loop = Cadastrados;
+	int Soma = 0;
+	while(loop != 0)
+	{
+		Soma += valores[loop];
+		loop--;
+	}
+	return ( Soma / Cadastrados );
+}
+
+int Filtrar(int valores[] , int maximo)
+{
+	int loop = Cadastrados;
+	int quantia = 0;
+	while( loop != 0)
+	{
+		if( valores[loop] <= maximo )
+		{
+			quantia++;
+		}
+		loop--;
+	}
+	return quantia;
+}
+
+int GetHigh(int valores[])
+{
+	int loop = Cadastrados;
+	int maior = 0;
+	while ( loop != 0 )
+	{
+		if( valores[loop] > maior )
+		{
+			maior = valores[loop];
+		}
+		loop--;
+	}
+	return maior;
+}
+
+int GetLow(int valores[])
+{
+	int loop = Cadastrados;
+	int menor = valores[loop];
+	while ( loop != 0 )
+	{
+		if( valores[loop] < menor )
+		{
+			menor = valores[loop];
+		}
+		loop--;
+	}
+	return menor;
+}
+
+void Start_Program()
+{
+	cout << "Registrar Novo Dado ? ( 0 = SAIR )" << endl;
+	cin >> read;
+	if( read == 0 )
+	{
+		return;
+	}
+	cout << "Registrar um novo salario:" << endl;
+	cin >> read;
+	addSalario(read);
+	cout << "Registrar a respectiva idade:" << endl;
+	cin >> read;
+	addIdade(read);
+	Cadastrados++;
+	Start_Program();	
+}
+
+int main(int argc, char** argv) {
+	Start_Program();
+	cout << "==================================================================" << endl;
+	cout << "Programa Finalizado com sucesso!" << endl;
+	cout << "\nNumero de dados registrados: " << Cadastrados << endl;
+	cout << " Media de Salarios: " << TiraMedia(salarios) << endl;
+	cout << " Media de Idades: " << TiraMedia(idades) << endl;
+	cout << " Quantidade de pessoas que recebem ate 900 Reais : " << Filtrar(salarios , 900) << endl;
+	cout << " Maior idade: " << GetHigh(idades) << endl;
+	cout << " Menor idade: " << GetLow(idades) << endl;
+	cout << "==================================================================" << endl;
+	return 0;
+}
